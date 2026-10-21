@@ -1,0 +1,32 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Generated from replica/design/tokens.json. Edit the JSON, then regenerate. Keys are shared with Colors.Dark.xaml. -->
+    <Color x:Key="Color.Bg">#F6F7F9</Color>
+    <Color x:Key="Color.Surface">#FFFFFF</Color>
+    <Color x:Key="Color.SurfaceAlt">#EEF0F3</Color>
+    <Color x:Key="Color.Border">#DFE2E7</Color>
+    <Color x:Key="Color.BorderInput">#7B818B</Color>
+    <Color x:Key="Color.Text">#16181D</Color>
+    <Color x:Key="Color.TextMuted">#5A616C</Color>
+    <Color x:Key="Color.Accent">#3B5BDB</Color>
+    <Color x:Key="Color.OnAccent">#FFFFFF</Color>
+    <Color x:Key="Color.Danger">#B42318</Color>
+    <Color x:Key="Color.Success">#0F7A3D</Color>
+    <Color x:Key="Color.Warning">#8A5300</Color>
+
+    <SolidColorBrush x:Key="Brush.Bg" Color="{StaticResource Color.Bg}" />
+    <SolidColorBrush x:Key="Brush.Surface" Color="{StaticResource Color.Surface}" />
+    <SolidColorBrush x:Key="Brush.SurfaceAlt" Color="{StaticResource Color.SurfaceAlt}" />
+    <SolidColorBrush x:Key="Brush.Border" Color="{StaticResource Color.Border}" />
+    <SolidColorBrush x:Key="Brush.BorderInput" Color="{StaticResource Color.BorderInput}" />
+    <SolidColorBrush x:Key="Brush.Text" Color="{StaticResource Color.Text}" />
+    <SolidColorBrush x:Key="Brush.TextMuted" Color="{StaticResource Color.TextMuted}" />
+    <SolidColorBrush x:Key="Brush.Accent" Color="{StaticResource Color.Accent}" />
+    <SolidColorBrush x:Key="Brush.OnAccent" Color="{StaticResource Color.OnAccent}" />
+    <SolidColorBrush x:Key="Brush.Danger" Color="{StaticResource Color.Danger}" />
+    <SolidColorBrush x:Key="Brush.Success" Color="{StaticResource Color.Success}" />
+    <SolidColorBrush x:Key="Brush.Warning" Color="{StaticResource Color.Warning}" />
+    <SolidColorBrush x:Key="Brush.AccentSubtle" Color="{StaticResource Color.Accent}" Opacity="0.10" />
+    <SolidColorBrush x:Key="Brush.HoverOverlay" Color="#000000" Opacity="0.04" />
+    <SolidColorBrush x:Key="Brush.PressedOverlay" Color="#000000" Opacity="0.08" />
+</ResourceDictionary>

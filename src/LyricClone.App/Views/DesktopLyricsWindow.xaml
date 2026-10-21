@@ -1,0 +1,62 @@
+<Window x:Class="LyricClone.App.Views.DesktopLyricsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lyrics="clr-namespace:LyricClone.App.Lyrics"
+        Title="桌面歌词"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Topmost="True" ShowInTaskbar="False" ResizeMode="NoResize"
+        SizeToContent="Height" Width="900"
+        UseLayoutRounding="True">
+    <Grid x:Name="Root" Background="#01000000">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border x:Name="Toolbar" Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,4"
+                Height="32" CornerRadius="{StaticResource Radius.Md}" Background="{StaticResource Brush.Lyric.OverlayBg}"
+                Padding="4,0" Visibility="Hidden">
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="LockButton" Style="{StaticResource Button.Icon}" Foreground="{StaticResource Brush.Lyric.Text}"
+                        ToolTip="锁定（鼠标穿透）" AutomationProperties.Name="锁定桌面歌词" Click="OnLock">
+                    <Path Data="{StaticResource Icon.Lock}" Style="{StaticResource IconPath}" />
+                </Button>
+                <Button Style="{StaticResource Button.Icon}" Foreground="{StaticResource Brush.Lyric.Text}"
+                        ToolTip="缩小文字" AutomationProperties.Name="缩小文字" Click="OnSmaller">
+                    <Path Data="{StaticResource Icon.Minus}" Style="{StaticResource IconPath}" />
+                </Button>
+                <Button Style="{StaticResource Button.Icon}" Foreground="{StaticResource Brush.Lyric.Text}"
+                        ToolTip="放大文字" AutomationProperties.Name="放大文字" Click="OnLarger">
+                    <Path Data="{StaticResource Icon.Plus}" Style="{StaticResource IconPath}" />
+                </Button>
+                <Button Style="{StaticResource Button.Icon}" Foreground="{StaticResource Brush.Lyric.Text}"
+                        ToolTip="设置" AutomationProperties.Name="打开设置" Click="OnSettings">
+                    <Path Data="{StaticResource Icon.Settings}" Style="{StaticResource IconPath}" />
+                </Button>
+                <Button Style="{StaticResource Button.Icon}" Foreground="{StaticResource Brush.Lyric.Text}"
+                        ToolTip="关闭桌面歌词" AutomationProperties.Name="关闭桌面歌词" Click="OnClose">
+                    <Path Data="{StaticResource Icon.Close}" Style="{StaticResource IconPath}" />
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <Border x:Name="LyricsPanel" Grid.Row="1" CornerRadius="{StaticResource Radius.Lg}" Padding="16,8">
+            <StackPanel>
+                <lyrics:LyricLineView x:Name="CurrentLine" HorizontalAlignment="Stretch"
+                                      FontFamily="{StaticResource Font.Display}"
+                                      TextBrush="{StaticResource Brush.Lyric.Text}"
+                                      SungBrush="{StaticResource Brush.Lyric.Sung}"
+                                      DimBrush="{StaticResource Brush.Lyric.Dim}"
+                                      TranslationBrush="{StaticResource Brush.Lyric.Translation}"
+                                      StrokeBrush="{StaticResource Brush.Lyric.Stroke}"
+                                      OutlineThickness="{StaticResource Lyric.OutlineThickness}"
+                                      TranslationRatio="{StaticResource Lyric.Desktop.TranslationRatio}" />
+                <lyrics:LyricLineView x:Name="NextLine" Margin="0,4,0,0" IsActive="False" ShowTranslation="False"
+                                      FontFamily="{StaticResource Font.Display}"
+                                      DimBrush="{StaticResource Brush.Lyric.Dim}"
+                                      StrokeBrush="{StaticResource Brush.Lyric.Stroke}"
+                                      OutlineThickness="{StaticResource Lyric.OutlineThickness}" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

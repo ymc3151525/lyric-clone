@@ -1,0 +1,30 @@
+<Window x:Class="LyricClone.App.Views.TaskbarLyricsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lyrics="clr-namespace:LyricClone.App.Lyrics"
+        Title="任务栏歌词"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Topmost="True" ShowInTaskbar="False" ResizeMode="NoResize"
+        Height="40" Width="480" UseLayoutRounding="True">
+    <Border x:Name="Root" Background="#CC101114" Padding="8,0">
+        <DockPanel>
+            <Border x:Name="CoverFrame" DockPanel.Dock="Left" Width="24" Height="24" CornerRadius="4"
+                    Margin="0,0,8,0" VerticalAlignment="Center" Background="#33FFFFFF" ClipToBounds="True">
+                <Grid>
+                    <Path x:Name="CoverPlaceholder" Data="{StaticResource Icon.Music}" Stretch="Uniform"
+                          Margin="5" Stroke="{StaticResource Brush.Lyric.Dim}" StrokeThickness="1.4"
+                          Fill="Transparent" />
+                    <Image x:Name="Cover" Stretch="UniformToFill" />
+                </Grid>
+            </Border>
+            <lyrics:LyricLineView x:Name="Line" VerticalAlignment="Center"
+                                  FontSize="14" FontWeight="SemiBold" TextAlignment="Left"
+                                  FontFamily="{StaticResource Font.Sans}"
+                                  TextBrush="{StaticResource Brush.Lyric.Text}"
+                                  SungBrush="{StaticResource Brush.Lyric.Sung}"
+                                  DimBrush="{StaticResource Brush.Lyric.Dim}"
+                                  TranslationBrush="{StaticResource Brush.Lyric.Translation}"
+                                  ShowTranslation="False" />
+        </DockPanel>
+    </Border>
+</Window>

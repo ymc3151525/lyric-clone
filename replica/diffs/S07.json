@@ -1,0 +1,40 @@
+﻿{
+  "mode": "layout",
+  "original": {
+    "width": 1024,
+    "height": 729
+  },
+  "clone": {
+    "width": 1894,
+    "height": 1289
+  },
+  "compared_at": {
+    "width": 480,
+    "height": 327
+  },
+  "height_delta_pct": -4.4,
+  "score": 23.9,
+  "verdict": "different",
+  "regions": [
+    {
+      "x": 256,
+      "y": 0,
+      "w": 768,
+      "h": 512,
+      "cells": 36,
+      "where": "top centre"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "w": 256,
+      "h": 729,
+      "cells": 16,
+      "where": "middle left"
+    }
+  ],
+  "files": {
+    "original": "D:\\workspace\\codespace\\lyric-clone\\replica\\screens\\S07.png",
+    "clone": "D:\\workspace\\codespace\\lyric-clone\\replica\\clone-screens\\settings.png"
+  }
+}

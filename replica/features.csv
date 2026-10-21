@@ -1,0 +1,64 @@
+feature,area,priority,original,clone,notes
+Tray icon with context menu (toggle views; settings; exit),shell,must,yes,yes,S01: desktop / lock / island / taskbar toggles; Current Playback; All Tracks; settings; fullscreen; stage; exit
+Single instance + start with Windows,shell,should,yes,yes,single instance + HKCU Run key (Settings → 常规 → 开机时启动); --autostart skips the no-player hint
+Read SMTC sessions and pick the active one,playback,must,yes,yes,SmtcSessionWatcher: events + 1 s poll
+Track info + timeline extrapolation between SMTC updates,playback,must,yes,yes,PlaybackClock (unit tested)
+Internal timer fallback for players without timeline,playback,must,yes,yes,PlaybackClock (unit tested)
+Session delay per app and global device delay,playback,must,yes,yes,engine + S07 device delay + S08 per-app delay
+Timeline smoothing for jumpy players (own implementation),playback,should,yes,yes,ignore ±80 ms noise; drop backward jitter < 1200 ms; ease forward jumps < 1200 ms over 700 ms. Real Apple Music / browser check is still manual
+Browser sessions disabled by default,playback,should,yes,yes,AppSettings.LooksLikeBrowser + IncludeBrowserSessions; switch in S07
+LRCLIB search + fetch (synced and plain),lyrics,must,partial,yes,LrclibClient: /api/get; /api/search; /api/get/{id}; queue + Retry-After
+Local lyric file lookup next to the audio / in a lyrics folder,lyrics,should,partial,yes,LocalFileProvider for a chosen folder; folder picker in S07 Lyrics page
+Embedded lyrics from audio tags (USLT / SYLT / LYRICS),lyrics,should,partial,yes,AudioTagReader: ID3v2 USLT/SYLT; FLAC LYRICS; MP4 ©lyr. Music folder indexed by tags (default: My Music)
+Parse LRC (incl. enhanced word timestamps),lyrics,must,yes,yes,LrcParser (unit tested)
+Parse TTML (incl. .xml),lyrics,must,yes,yes,TtmlParser (unit tested)
+Parse QRC / KRC / YRC / Lyricify Lines / Lyricify Syllable,lyrics,should,yes,yes,HelperLyricsParser wraps Lyricify.Lyrics.Helper 0.2.0 (Apache-2.0) parsers + QRC/KRC decrypt of pasted text. Searchers unused
+Translation lines,lyrics,must,yes,yes,same-tag lines; separate LRC; TTML inline + head
+Automatic track matching (title / artist / album / duration fuzzy),lyrics,must,yes,yes,TrackNormalizer + score threshold (unit tested)
+Version selection rule: pinned > confirmed > source order,lyrics,must,yes,yes,VersionSelector (unit tested)
+Lyrics cache in local database,lyrics,must,yes,yes,SQLite library.db + lookup_misses
+Auto-update saved online lyrics setting,lyrics,could,yes,yes,S07 Lyrics: refreshes cached LRCLIB versions older than 7 days; skips pinned / confirmed
+Dynamic Lyrics Island view,views,must,yes,yes,S02 IslandWindow: top-centre pill; hover expands with title + prev / play-pause / next; auto-hide when idle; credit on About page (CC BY-SA 4.0)
+Desktop Lyrics view with lock (click-through) / unlock / drag,views,must,yes,yes,S03; unlock from tray menu or settings
+Word / syllable highlight animation,views,must,yes,yes,LyricLineView clip fill; checked in design-gallery.png and offset.png
+Taskbar Lyrics view,views,should,yes,yes,S04 strip aligned to SHAppBarMessage; hidden on auto-hide / fullscreen / vertical taskbar
+Apple-Music-style fullscreen lyrics with blurred cover,views,should,yes,yes,S05 FullscreenLyricsWindow: all lines; current line anchored; SMTC cover as blurred backdrop; Esc to close
+Lyrics Stage fullscreen view,views,could,yes,yes,S06 StageWindow: centred Lyric.Stage.Size; cover-sampled gradient capped at 0.15 luminance; Esc / F11 / double-click exit
+Per-view display options (size; colours; lines; translation on/off; position),views,must,yes,yes,S07 Views: desktop + island + fullscreen fonts/colours/translation; desktop size/align/two-lines/outline/position; island auto-hide + opacity/scale/karaoke/two-lines/fullscreen hide
+Simplified Chinese / romaji / long-line split / explicit filter,lyrics,should,yes,yes,S07 Lyrics display: LCMapString simplified; kana romaji; punctuation split; token mask. No QQ/NetEase/Kugou sources
+Island extras (wider island; karaoke; opacity; scale; side content),views,should,yes,yes,S07 island: continent width; two lines; track info only; bold; karaoke; hide on OS/lyrics fullscreen; opacity; background opacity; scale; side content default/hidden/cover
+Auto-save library + version pick mode,lyrics,should,yes,yes,AutoManageLibrary skip fetch; VersionPick SourceFirst or PreferQuality
+Custom fonts for every view,views,should,yes,yes,font picker for desktop; island; fullscreen; taskbar; stage
+Multi-monitor + per-monitor DPI,views,should,unknown,partial,PerMonitorV2 manifest; off-screen position reset; not tested on two monitors
+Settings window with sections,settings,must,yes,yes,S07: General / Lyrics / Views / Per app / About; light + dark checked in screenshots
+Per-app configuration list + edit dialog,settings,must,yes,yes,S08 as the Per app page: enable; delay; smoothing; own source order; reset
+Lyric source order (global and per app),settings,must,yes,yes,up / down lists in S07 Lyrics page and S08
+Settings persistence (JSON in %AppData%),settings,must,yes,yes,JsonSettingsStore with atomic save + broken-file backup; LYRIC_CLONE_DATA_DIR override
+Config migration / import-export,settings,could,yes,yes,export / import buttons in S07 General
+Tracks & Lyrics: Current Playback window (follows track changes),management,must,yes,yes,S09 ManagerWindow(allTracks: false) follows NowPlayingService.Resolved
+Tracks & Lyrics: All Tracks with search (Ctrl+F) / filter / sort / refresh,management,must,yes,yes,S10 ManagerWindow(allTracks: true)
+Search and select version dialog with preview,management,must,yes,yes,S11 SearchDialog: LRCLIB search; preview; duration warning over 2 s
+Specify version by LRCLIB ID or link,management,should,partial,yes,S12 ByIdDialog: fetch then confirm
+Pin / Confirm / Unpin / Unconfirm / Use version / Restore auto,management,must,yes,yes,primary / secondary buttons in S09 / S10; reloads the playing track
+Import local lyric file,management,must,yes,yes,Add lyrics menu: file picker → S13 editor
+Add lyrics from text + optional translation tab,management,must,yes,yes,S13 LyricsEditorDialog with format auto-detect and live parse check
+Edit and rename local versions,management,should,yes,yes,More menu: edit (S13) and rename (S17)
+Refetch version; auto search and replace; delete version,management,should,yes,yes,More menu refetch + delete; Change version menu auto search and replace
+Effect preview with follow playback / simulated playback,management,should,yes,yes,S14 OffsetDialog
+Per-version lyric offset (ms) with save / reset,management,must,yes,yes,S14 OffsetDialog: ±50 / ±500 / typed value / reset / save
+Selection rules info popup,management,could,yes,yes,S15 via the ? button next to Lyric sources
+SMTC unavailable / no player detected messages,errors,must,yes,yes,S16 PlayerHintDialog after 10 s (or immediately if SMTC is down); "不再提示" for the no-player cases; tray notification kept for SMTC down
+Localisation zh-CN + en,i18n,could,yes,partial,selector + Loc.T / LocExtension on tray; dialogs; settings nav; window titles; empty states. Long settings hints still zh-CN
+Global hotkeys (toggle views; lock desktop),shell,should,yes,yes,S07 快捷键: Ctrl/Alt/Win + key; RegisterHotKey
+Support / help page,about,could,yes,yes,S07 支持: SMTC; LRCLIB; where data lives. Not the original's store page
+About page with credits (CC BY-SA attribution; Apache-2.0 notices),about,must,no,yes,S07 About page: Lyricify (WXRIW) CC BY-SA 4.0 credit for the island idea; LRCLIB; package licences; User-Agent shown
+Update checker,shell,could,yes,yes,"S07 About: optional JSON feed {version,url,notes}; no default published URL — the button says so"
+Accessibility: keyboard navigation in windows,a11y,could,unknown,yes,Tab cycle on windows; focus ring on buttons/inputs; Esc/F11/Space on fullscreen and stage; Ctrl+F in All Tracks
+QQ Music / NetEase / Kugou lyric sources,lyrics,could,yes,skip,private APIs
+Import by QQ / NetEase ID or link,management,could,yes,skip,private APIs
+Lyricify 4 public lyrics vault + accounts,network,could,yes,skip,owned network and data
+Player plugins for perfect matching,integrations,could,yes,skip,third-party plugins outside SMTC
+Lyricify branding / icons / copy,brand,could,yes,skip,owned assets
+Bundled lyrics content,content,could,n/a,skip,copyrighted; only fetched at runtime or supplied by user
+Unlocking original's Store-only features,licensing,could,yes,skip,not done; clone has its own equivalents
+Microsoft Store distribution,distribution,could,yes,skip,personal use

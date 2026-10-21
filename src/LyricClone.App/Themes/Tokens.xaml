@@ -1,0 +1,82 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+    <!-- Theme-independent tokens from replica/design/tokens.json. -->
+
+    <FontFamily x:Key="Font.Sans">Segoe UI Variable Text, Segoe UI, Microsoft YaHei UI</FontFamily>
+    <FontFamily x:Key="Font.Display">Segoe UI Variable Display, Segoe UI, Microsoft YaHei UI</FontFamily>
+    <FontFamily x:Key="Font.Mono">Cascadia Mono, Consolas</FontFamily>
+
+    <sys:Double x:Key="Type.Caption.Size">12</sys:Double>
+    <sys:Double x:Key="Type.Body.Size">14</sys:Double>
+    <sys:Double x:Key="Type.Subtitle.Size">20</sys:Double>
+    <sys:Double x:Key="Type.Title.Size">28</sys:Double>
+    <sys:Double x:Key="Type.Display.Size">40</sys:Double>
+
+    <sys:Double x:Key="Lyric.Island.Size">16</sys:Double>
+    <sys:Double x:Key="Lyric.IslandExpanded.Size">16</sys:Double>
+    <sys:Double x:Key="Lyric.Island.TranslationRatio">0.7</sys:Double>
+    <sys:Double x:Key="Lyric.Island.TranslationGap">5</sys:Double>
+    <sys:Double x:Key="Lyric.Taskbar.Size">13</sys:Double>
+    <sys:Double x:Key="Lyric.Desktop.Size">32</sys:Double>
+    <sys:Double x:Key="Lyric.Desktop.TranslationRatio">0.6</sys:Double>
+    <sys:Double x:Key="Lyric.Fullscreen.Current.Size">40</sys:Double>
+    <sys:Double x:Key="Lyric.Fullscreen.Other.Size">32</sys:Double>
+    <sys:Double x:Key="Lyric.Fullscreen.Other.Opacity">0.35</sys:Double>
+    <sys:Double x:Key="Lyric.Stage.Size">56</sys:Double>
+    <sys:Double x:Key="Lyric.OutlineThickness">1.5</sys:Double>
+
+    <Color x:Key="Color.Lyric.OverlayBg">#0B0B0E</Color>
+    <Color x:Key="Color.Lyric.Text">#FFFFFF</Color>
+    <Color x:Key="Color.Lyric.Sung">#9FB2FF</Color>
+    <Color x:Key="Color.Lyric.Dim">#8B8B93</Color>
+    <Color x:Key="Color.Lyric.Translation">#C3C3CB</Color>
+    <Color x:Key="Color.Lyric.Stroke">#000000</Color>
+    <SolidColorBrush x:Key="Brush.Lyric.OverlayBg" Color="{StaticResource Color.Lyric.OverlayBg}" Opacity="0.88" />
+    <SolidColorBrush x:Key="Brush.Lyric.Text" Color="{StaticResource Color.Lyric.Text}" />
+    <SolidColorBrush x:Key="Brush.Lyric.Sung" Color="{StaticResource Color.Lyric.Sung}" />
+    <SolidColorBrush x:Key="Brush.Lyric.Dim" Color="{StaticResource Color.Lyric.Dim}" />
+    <SolidColorBrush x:Key="Brush.Lyric.Translation" Color="{StaticResource Color.Lyric.Translation}" />
+    <SolidColorBrush x:Key="Brush.Lyric.Stroke" Color="{StaticResource Color.Lyric.Stroke}" />
+
+    <sys:Double x:Key="Space.1">4</sys:Double>
+    <sys:Double x:Key="Space.2">8</sys:Double>
+    <sys:Double x:Key="Space.3">12</sys:Double>
+    <sys:Double x:Key="Space.4">16</sys:Double>
+    <sys:Double x:Key="Space.5">24</sys:Double>
+    <sys:Double x:Key="Space.6">32</sys:Double>
+    <sys:Double x:Key="Space.7">48</sys:Double>
+    <sys:Double x:Key="Space.8">64</sys:Double>
+    <Thickness x:Key="Pad.Control">12,6,12,6</Thickness>
+    <Thickness x:Key="Pad.Card">16</Thickness>
+    <Thickness x:Key="Pad.Page">24</Thickness>
+
+    <CornerRadius x:Key="Radius.Sm">4</CornerRadius>
+    <CornerRadius x:Key="Radius.Md">8</CornerRadius>
+    <CornerRadius x:Key="Radius.Lg">12</CornerRadius>
+    <CornerRadius x:Key="Radius.Pill">999</CornerRadius>
+    <CornerRadius x:Key="Radius.Island">22</CornerRadius>
+
+    <DropShadowEffect x:Key="Shadow.Card" BlurRadius="4" ShadowDepth="1" Direction="270" Opacity="0.08" Color="#000000" />
+    <DropShadowEffect x:Key="Shadow.Pop" BlurRadius="24" ShadowDepth="8" Direction="270" Opacity="0.18" Color="#000000" />
+    <DropShadowEffect x:Key="Shadow.LyricGlow" BlurRadius="8" ShadowDepth="0" Opacity="0.6" Color="#000000" />
+
+    <Duration x:Key="Motion.Fast">0:0:0.12</Duration>
+    <Duration x:Key="Motion.Base">0:0:0.20</Duration>
+    <Duration x:Key="Motion.LineScroll">0:0:0.42</Duration>
+    <Duration x:Key="Motion.IslandResize">0:0:0.36</Duration>
+    <ExponentialEase x:Key="Motion.Ease" EasingMode="EaseOut" Exponent="6" />
+
+    <sys:Double x:Key="Layout.Settings.NavWidth">240</sys:Double>
+    <sys:Double x:Key="Layout.Manager.TrackListWidth">320</sys:Double>
+    <sys:Double x:Key="Layout.Manager.SourcesWidth">300</sys:Double>
+    <sys:Double x:Key="Layout.Island.Height">56</sys:Double>
+    <sys:Double x:Key="Layout.Island.HeightExpanded">72</sys:Double>
+    <sys:Double x:Key="Layout.Island.Cover">36</sys:Double>
+    <sys:Double x:Key="Layout.Island.MinWidth">180</sys:Double>
+    <sys:Double x:Key="Layout.Island.MaxWidth">560</sys:Double>
+    <sys:Double x:Key="Layout.Island.TopOffset">8</sys:Double>
+    <sys:Double x:Key="Layout.Control.HeightSm">28</sys:Double>
+    <sys:Double x:Key="Layout.Control.HeightMd">32</sys:Double>
+    <sys:Double x:Key="Layout.Control.HeightLg">40</sys:Double>
+</ResourceDictionary>

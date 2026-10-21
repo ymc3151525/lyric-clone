@@ -1,0 +1,81 @@
+<Window x:Class="LyricClone.App.Views.IslandWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lyrics="clr-namespace:LyricClone.App.Lyrics"
+        Title="灵动词岛"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Topmost="True" ShowInTaskbar="False" ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight" UseLayoutRounding="True">
+    <Grid>
+        <Path x:Name="EarNW" Width="16" Height="16" Stretch="Fill" IsHitTestVisible="False" Visibility="Collapsed"
+              HorizontalAlignment="Left" VerticalAlignment="Top"
+              Data="M0,16 C0,16 0,0 16,0 L0,0 Z"
+              Fill="{StaticResource Brush.Lyric.OverlayBg}" />
+        <Path x:Name="EarNE" Width="16" Height="16" Stretch="Fill" IsHitTestVisible="False" Visibility="Collapsed"
+              HorizontalAlignment="Right" VerticalAlignment="Top"
+              Data="M16,16 C16,16 16,0 0,0 L16,0 Z"
+              Fill="{StaticResource Brush.Lyric.OverlayBg}" />
+        <Path x:Name="EarSW" Width="16" Height="16" Stretch="Fill" IsHitTestVisible="False" Visibility="Collapsed"
+              HorizontalAlignment="Left" VerticalAlignment="Bottom"
+              Data="M0,0 C0,0 0,16 16,16 L0,16 Z"
+              Fill="{StaticResource Brush.Lyric.OverlayBg}" />
+        <Path x:Name="EarSE" Width="16" Height="16" Stretch="Fill" IsHitTestVisible="False" Visibility="Collapsed"
+              HorizontalAlignment="Right" VerticalAlignment="Bottom"
+              Data="M16,0 C16,0 16,16 0,16 L16,16 Z"
+              Fill="{StaticResource Brush.Lyric.OverlayBg}" />
+
+        <Border x:Name="Pill" Margin="8"
+                MinWidth="{StaticResource Layout.Island.MinWidth}" MaxWidth="{StaticResource Layout.Island.MaxWidth}"
+                MinHeight="{StaticResource Layout.Island.Height}"
+                CornerRadius="{StaticResource Radius.Island}"
+                Background="{StaticResource Brush.Lyric.OverlayBg}" Padding="20,12"
+                Effect="{StaticResource Shadow.Pop}">
+        <Border.LayoutTransform>
+            <ScaleTransform x:Name="Scale" ScaleX="1" ScaleY="1" />
+        </Border.LayoutTransform>
+        <Grid x:Name="Body" VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border x:Name="CoverHost" Width="36" Height="36" CornerRadius="10" Margin="0,0,14,0"
+                    Visibility="Collapsed" ClipToBounds="True" VerticalAlignment="Center"
+                    Background="#22FFFFFF" SizeChanged="OnCoverSizeChanged">
+                <Border.Clip>
+                    <RectangleGeometry x:Name="CoverClip" Rect="0,0,36,36" RadiusX="10" RadiusY="10" />
+                </Border.Clip>
+                <Grid>
+                    <Path x:Name="CoverPlaceholder" Data="{StaticResource Icon.Music}" Stretch="Uniform"
+                          Margin="8" Stroke="{StaticResource Brush.Lyric.Dim}" StrokeThickness="1.4"
+                          Fill="Transparent" Visibility="Collapsed" />
+                    <Image x:Name="CoverImage" Stretch="UniformToFill" />
+                </Grid>
+            </Border>
+
+            <StackPanel x:Name="TextCol" Grid.Column="1" VerticalAlignment="Center" SizeChanged="OnTextColSizeChanged">
+            <StackPanel x:Name="LyricBlock" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+            <lyrics:LyricLineView x:Name="Line" HorizontalAlignment="Stretch" TextAlignment="Center"
+                                  FontSize="{StaticResource Lyric.Island.Size}" FontWeight="SemiBold"
+                                  FontFamily="{StaticResource Font.Sans}"
+                                  TextBrush="{StaticResource Brush.Lyric.Text}"
+                                  SungBrush="{StaticResource Brush.Lyric.Sung}"
+                                  DimBrush="{StaticResource Brush.Lyric.Dim}"
+                                  TranslationBrush="{StaticResource Brush.Lyric.Translation}"
+                                  TranslationRatio="{StaticResource Lyric.Island.TranslationRatio}"
+                                  TranslationGap="{StaticResource Lyric.Island.TranslationGap}"
+                                  ShowTranslation="False" />
+            <lyrics:LyricLineView x:Name="NextLine" HorizontalAlignment="Stretch" TextAlignment="Center"
+                                  FontSize="13" FontWeight="Medium" Margin="0,8,0,0"
+                                  FontFamily="{StaticResource Font.Sans}"
+                                  TextBrush="{StaticResource Brush.Lyric.Dim}"
+                                  SungBrush="{StaticResource Brush.Lyric.Sung}"
+                                  DimBrush="{StaticResource Brush.Lyric.Dim}"
+                                  TranslationBrush="{StaticResource Brush.Lyric.Translation}"
+                                  ShowTranslation="False" IsActive="False" Visibility="Collapsed" />
+            </StackPanel>
+            </StackPanel>
+        </Grid>
+        </Border>
+    </Grid>
+</Window>

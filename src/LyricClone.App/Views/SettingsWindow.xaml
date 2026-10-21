@@ -1,0 +1,706 @@
+<Window x:Class="LyricClone.App.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:app="clr-namespace:LyricClone.App"
+        xmlns:lyrics="clr-namespace:LyricClone.App.Lyrics"
+        Style="{StaticResource AppWindow}"
+        Title="设置 — lyric-clone"
+        KeyboardNavigation.TabNavigation="Cycle"
+        Width="960" Height="680" MinWidth="760" MinHeight="520"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style x:Key="Section" TargetType="TextBlock" BasedOn="{StaticResource Text.Subtitle}">
+            <Setter Property="Margin" Value="0,24,0,8" />
+        </Style>
+        <Style x:Key="Row" TargetType="Grid">
+            <Setter Property="Margin" Value="0,6" />
+        </Style>
+        <Style x:Key="Hint" TargetType="TextBlock" BasedOn="{StaticResource Text.Muted}">
+            <Setter Property="Margin" Value="0,2,0,0" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style x:Key="NavItem" TargetType="ListBoxItem">
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="FontSize" Value="{StaticResource Type.Body.Size}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Bd" CornerRadius="{StaticResource Radius.Md}" Padding="{TemplateBinding Padding}" Background="Transparent" Margin="0,1">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.HoverOverlay}" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.AccentSubtle}" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="NavColumn" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Background="{DynamicResource Brush.SurfaceAlt}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
+            <DockPanel Margin="12,16">
+                <TextBlock DockPanel.Dock="Top" Style="{StaticResource Text.Title}" Text="设置" Margin="12,0,0,16" />
+                <ListBox x:Name="Nav" BorderThickness="0" Background="Transparent" ItemContainerStyle="{StaticResource NavItem}"
+                         SelectionChanged="OnNav" AutomationProperties.Name="设置分类">
+                    <ListBoxItem Content="{app:Loc 常规, General}" Tag="General" IsSelected="True" />
+                    <ListBoxItem Content="{app:Loc 歌词, Lyrics}" Tag="Lyrics" />
+                    <ListBoxItem Content="{app:Loc 按应用, Per app}" Tag="Apps" />
+                    <ListBoxItem Content="{app:Loc 视图, Views}" Tag="Views" />
+                    <ListBoxItem Content="{app:Loc 快捷键, Hotkeys}" Tag="Hotkeys" />
+                    <ListBoxItem Content="{app:Loc 支持, Support}" Tag="Support" />
+                    <ListBoxItem Content="{app:Loc 关于, About}" Tag="About" />
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <ScrollViewer x:Name="Scroller" Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <Grid Margin="32,20,32,32" MaxWidth="720" HorizontalAlignment="Left">
+
+                <!-- 常规 -->
+                <StackPanel x:Name="GeneralPage">
+                    <TextBlock Style="{StaticResource Text.Title}" Text="常规" />
+
+                    <TextBlock Style="{StaticResource Section}" Text="语言" />
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="240" /></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="界面语言" />
+                            <TextBlock Style="{StaticResource Hint}" Text="切换后立即生效。部分已打开的窗口可能需要关掉再开。" />
+                        </StackPanel>
+                        <ComboBox x:Name="LanguageBox" Grid.Column="1" SelectionChanged="OnLanguageChanged" AutomationProperties.Name="界面语言">
+                            <ComboBoxItem Content="跟随系统" />
+                            <ComboBoxItem Content="简体中文" />
+                            <ComboBoxItem Content="English" />
+                        </ComboBox>
+                    </Grid>
+
+                    <TextBlock Style="{StaticResource Section}" Text="外观" />
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="200" /></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="颜色模式" />
+                            <TextBlock Style="{StaticResource Hint}" Text="窗口和设置页的浅色 / 深色。歌词颜色在「视图」里单独设置。" />
+                        </StackPanel>
+                        <ComboBox x:Name="ThemeBox" Grid.Column="1" SelectionChanged="OnThemeChanged" AutomationProperties.Name="颜色模式">
+                            <ComboBoxItem Content="跟随系统（默认）" />
+                            <ComboBoxItem Content="浅色" />
+                            <ComboBoxItem Content="深色" />
+                        </ComboBox>
+                    </Grid>
+
+                    <TextBlock Style="{StaticResource Section}" Text="启动" />
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="开机时启动" />
+                            <TextBlock x:Name="AutostartHint" Style="{StaticResource Hint}" Text="登录 Windows 后自动在通知区域运行。也可以在 Windows 的「启动应用」里关闭。" />
+                        </StackPanel>
+                        <CheckBox x:Name="AutostartBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" Margin="16,0,0,0"
+                                  Click="OnAutostartToggle" AutomationProperties.Name="开机时启动" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="没有检测到播放器时提示" />
+                            <TextBlock Style="{StaticResource Hint}" Text="手动打开软件约 10 秒后还没有任何播放器时，弹出说明。开机自动启动时不提示。" />
+                        </StackPanel>
+                        <CheckBox x:Name="NoPlayerHintBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" Margin="16,0,0,0"
+                                  Click="OnGeneralToggle" AutomationProperties.Name="没有检测到播放器时提示" />
+                    </Grid>
+
+                    <TextBlock Style="{StaticResource Section}" Text="播放与同步" />
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="设备延迟" />
+                            <TextBlock Style="{StaticResource Hint}" Text="用蓝牙耳机等有延迟的设备时，让歌词整体晚一些出现。正数更晚，负数更早。" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
+                            <TextBox x:Name="DeviceDelayBox" Width="96" TextAlignment="Right" FontFamily="{StaticResource Font.Mono}"
+                                     LostKeyboardFocus="OnDeviceDelayCommit" KeyDown="OnNumberKey" AutomationProperties.Name="设备延迟毫秒数" />
+                            <TextBlock Style="{StaticResource Text.Body}" Text="ms" VerticalAlignment="Center" Margin="6,0,0,0" />
+                        </StackPanel>
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="时间轴平滑" />
+                            <TextBlock Style="{StaticResource Hint}" Text="播放器上报的进度不稳定时，忽略小的回跳并缓慢追上，避免歌词抖动。" />
+                        </StackPanel>
+                        <CheckBox x:Name="SmoothingBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" Margin="16,0,0,0"
+                                  Click="OnGeneralToggle" AutomationProperties.Name="时间轴平滑" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="读取浏览器里的播放" />
+                            <TextBlock Style="{StaticResource Hint}" Text="默认忽略浏览器中的视频和网页播放器。开启后，新出现的浏览器会被默认启用。" />
+                        </StackPanel>
+                        <CheckBox x:Name="BrowsersBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" Margin="16,0,0,0"
+                                  Click="OnGeneralToggle" AutomationProperties.Name="读取浏览器里的播放" />
+                    </Grid>
+
+                    <TextBlock Style="{StaticResource Section}" Text="备份" />
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="导出设置…" Click="OnExport" Margin="0,0,8,0" />
+                        <Button Content="导入设置…" Click="OnImport" Margin="0,0,8,0" />
+                        <Button Style="{StaticResource Button.Subtle}" Content="打开数据文件夹" Click="OnOpenDataFolder" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- 歌词 -->
+                <StackPanel x:Name="LyricsPage" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource Text.Title}" Text="歌词" />
+
+                    <TextBlock Style="{StaticResource Section}" Text="来源顺序" />
+                    <TextBlock Style="{StaticResource Hint}" Text="没有固定版本时，按这个顺序使用已保存的歌词，都没有时再依次查找。按应用的设置可以覆盖它。" Margin="0,0,0,8" />
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="320" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <Border Style="{StaticResource Card}" Padding="4">
+                            <ListBox x:Name="SourceOrderList" BorderThickness="0" Background="Transparent" Height="176" DisplayMemberPath="Label" />
+                        </Border>
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <Button Content="上移" MinWidth="72" Margin="0,0,0,8" Click="OnSourceUp" />
+                            <Button Content="下移" MinWidth="72" Click="OnSourceDown" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Style="{StaticResource Section}" Text="检索与保存" />
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="260" /></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="版本选择" />
+                            <TextBlock Style="{StaticResource Hint}" Text="有多个已保存版本时怎么挑。固定和已确认的版本始终优先。" />
+                        </StackPanel>
+                        <ComboBox x:Name="VersionPickBox" Grid.Column="1" SelectionChanged="OnVersionPickChanged" AutomationProperties.Name="版本选择">
+                            <ComboBoxItem Content="按来源顺序" />
+                            <ComboBoxItem Content="按来源顺序，否则选同步更好的" />
+                        </ComboBox>
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="自动保存曲目和歌词" />
+                            <TextBlock Style="{StaticResource Hint}" Text="关闭后不再联网查找或写入曲目库，已经保存的内容仍可手动管理。" />
+                        </StackPanel>
+                        <CheckBox x:Name="AutoManageBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" Margin="16,0,0,0"
+                                  Click="OnLyricsContentToggle" AutomationProperties.Name="自动保存曲目和歌词" />
+                    </Grid>
+
+                    <TextBlock Style="{StaticResource Section}" Text="歌词显示" />
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="显示中文翻译" />
+                            <TextBlock Style="{StaticResource Hint}" Text="各视图还可以单独关掉翻译。这里关掉则所有视图都不显示。" />
+                        </StackPanel>
+                        <CheckBox x:Name="ChineseTranslationBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" Margin="16,0,0,0"
+                                  Click="OnLyricsContentToggle" AutomationProperties.Name="显示中文翻译" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="260" /></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="罗马音" />
+                            <TextBlock Style="{StaticResource Hint}" Text="歌词里有日文假名时，在翻译行附上罗马音。不含汉字读音。" />
+                        </StackPanel>
+                        <ComboBox x:Name="RomajiBox" Grid.Column="1" SelectionChanged="OnRomajiChanged" AutomationProperties.Name="罗马音">
+                            <ComboBoxItem Content="不显示" />
+                            <ComboBoxItem Content="显示" />
+                        </ComboBox>
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="优先简体中文" />
+                            <TextBlock Style="{StaticResource Hint}" Text="把繁体字转成简体后再显示。重新加载或切歌后生效。" />
+                        </StackPanel>
+                        <CheckBox x:Name="SimplifiedBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" Margin="16,0,0,0"
+                                  Click="OnLyricsContentToggle" AutomationProperties.Name="优先简体中文" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="拆开过长的中文行" />
+                            <TextBlock Style="{StaticResource Hint}" Text="遇到逗号、句号等标点时把很长的一行分成多行。刷新歌词后生效。" />
+                        </StackPanel>
+                        <CheckBox x:Name="SplitLinesBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" Margin="16,0,0,0"
+                                  Click="OnLyricsContentToggle" AutomationProperties.Name="拆开过长的中文行" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="显示脏词" />
+                            <TextBlock Style="{StaticResource Hint}" Text="关闭后，常见脏词会显示成星号。" />
+                        </StackPanel>
+                        <CheckBox x:Name="ExplicitBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" Margin="16,0,0,0"
+                                  Click="OnLyricsContentToggle" AutomationProperties.Name="显示脏词" />
+                    </Grid>
+
+                    <TextBlock Style="{StaticResource Section}" Text="在线来源" />
+                    <TextBlock Style="{StaticResource Hint}" Text="优先读取本机 QQ / 网易云 / 酷狗已经缓存的歌词文件，再查本地文件夹、音频内嵌和公开的 LRCLIB。不会调用这些播放器未公开的网络接口。" Margin="0,0,0,8" />
+
+                    <TextBlock Style="{StaticResource Section}" Text="本地歌词文件夹" />
+                    <TextBlock Style="{StaticResource Hint}" Text="放 .lrc、.ttml、.qrc、.krc、.yrc、.lys、.lyl 文件，文件名写「歌名」或「艺人 - 歌名」即可自动匹配。" Margin="0,0,0,8" />
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBox x:Name="FolderBox" IsReadOnly="True" AutomationProperties.Name="本地歌词文件夹" />
+                        <Button Grid.Column="1" Content="选择…" Margin="8,0,0,0" Click="OnPickFolder" />
+                        <Button Grid.Column="2" Style="{StaticResource Button.Subtle}" Content="清除" Margin="4,0,0,0" Click="OnClearFolder" />
+                    </Grid>
+
+                    <TextBlock Style="{StaticResource Section}" Text="音乐文件夹（内嵌歌词）" />
+                    <TextBlock Style="{StaticResource Hint}" Margin="0,0,0,8"
+                               Text="读取这个文件夹里 MP3、FLAC、M4A 文件自带的歌词，按标签里的歌名和艺人匹配正在播放的歌。不设置时使用系统的「音乐」文件夹。" />
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBox x:Name="MusicFolderBox" IsReadOnly="True" AutomationProperties.Name="音乐文件夹" />
+                        <Button Grid.Column="1" Content="选择…" Margin="8,0,0,0" Click="OnPickMusicFolder" />
+                        <Button Grid.Column="2" Style="{StaticResource Button.Subtle}" Content="使用默认" Margin="4,0,0,0" Click="OnClearMusicFolder" />
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <Button x:Name="ScanMusicButton" Content="重新扫描" Click="OnScanMusic" />
+                        <TextBlock x:Name="MusicScanText" Style="{StaticResource Text.Muted}" VerticalAlignment="Center" Margin="12,0,0,0" />
+                    </StackPanel>
+
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="自动更新已保存的在线歌词" />
+                            <TextBlock Style="{StaticResource Hint}" Text="未固定的 LRCLIB 版本超过 7 天后再播放时，会再查一次并覆盖缓存。固定和已确认的版本不会动。" />
+                        </StackPanel>
+                        <CheckBox x:Name="AutoUpdateBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" Margin="16,0,0,0"
+                                  Click="OnAutoUpdateToggle" AutomationProperties.Name="自动更新已保存的在线歌词" />
+                    </Grid>
+
+                    <TextBlock Style="{StaticResource Section}" Text="曲目库" />
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="打开全部曲目" Click="OnOpenLibrary" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- 视图 -->
+                <StackPanel x:Name="ViewsPage" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource Text.Title}" Text="视图" />
+                    <TextBlock Style="{StaticResource Hint}" Text="改字号、翻译、两行或描边时，下面这行会跟着变。用的是桌面歌词那一组。" Margin="0,8,0,8" />
+                    <Border Style="{StaticResource Card}" Padding="20,16" Background="{StaticResource Brush.Lyric.OverlayBg}" Margin="0,0,0,8">
+                        <StackPanel>
+                            <lyrics:LyricLineView x:Name="ViewPreviewCurrent" FontSize="32" FontWeight="SemiBold"
+                                                  FontFamily="{StaticResource Font.Sans}"
+                                                  TextBrush="{StaticResource Brush.Lyric.Text}"
+                                                  SungBrush="{StaticResource Brush.Lyric.Sung}"
+                                                  DimBrush="{StaticResource Brush.Lyric.Dim}"
+                                                  TranslationBrush="{StaticResource Brush.Lyric.Translation}"
+                                                  StrokeBrush="{StaticResource Brush.Lyric.Stroke}"
+                                                  OutlineThickness="{StaticResource Lyric.OutlineThickness}"
+                                                  ShowTranslation="True" />
+                            <lyrics:LyricLineView x:Name="ViewPreviewNext" FontSize="24" Margin="0,8,0,0" IsActive="False"
+                                                  FontFamily="{StaticResource Font.Sans}"
+                                                  TextBrush="{StaticResource Brush.Lyric.Text}"
+                                                  SungBrush="{StaticResource Brush.Lyric.Sung}"
+                                                  DimBrush="{StaticResource Brush.Lyric.Dim}"
+                                                  TranslationBrush="{StaticResource Brush.Lyric.Translation}"
+                                                  StrokeBrush="{StaticResource Brush.Lyric.Stroke}"
+                                                  OutlineThickness="{StaticResource Lyric.OutlineThickness}"
+                                                  ShowTranslation="True" />
+                        </StackPanel>
+                    </Border>
+                    <TextBlock x:Name="ViewTranslationHint" Style="{StaticResource Hint}" Visibility="Collapsed"
+                               Text="先打开显示中文翻译" Margin="0,0,0,8" />
+
+                    <TextBlock Style="{StaticResource Section}" Text="桌面歌词" />
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="显示桌面歌词" VerticalAlignment="Center" />
+                        <CheckBox x:Name="DesktopEnabledBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="显示桌面歌词" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="锁定（鼠标可以穿透）" VerticalAlignment="Center" />
+                        <CheckBox x:Name="DesktopLockedBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="锁定桌面歌词" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="260" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="字体" VerticalAlignment="Center" />
+                        <ComboBox x:Name="DesktopFontBox" Grid.Column="1" IsEditable="True" IsTextSearchEnabled="True"
+                                  LostKeyboardFocus="OnFontCommit" SelectionChanged="OnFontCommit" AutomationProperties.Name="桌面歌词字体" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="260" /><ColumnDefinition Width="48" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="字号" VerticalAlignment="Center" />
+                        <Slider x:Name="DesktopSizeSlider" Grid.Column="1" Minimum="16" Maximum="72" TickFrequency="2" IsSnapToTickEnabled="True"
+                                VerticalAlignment="Center" ValueChanged="OnSizeChanged" AutomationProperties.Name="桌面歌词字号" />
+                        <TextBlock x:Name="DesktopSizeText" Grid.Column="2" Style="{StaticResource Text.Muted}" VerticalAlignment="Center" TextAlignment="Right" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="260" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="对齐" VerticalAlignment="Center" />
+                        <ComboBox x:Name="DesktopAlignBox" Grid.Column="1" SelectionChanged="OnAlignChanged" AutomationProperties.Name="桌面歌词对齐">
+                            <ComboBoxItem Content="左对齐" />
+                            <ComboBoxItem Content="居中" />
+                            <ComboBoxItem Content="右对齐" />
+                        </ComboBox>
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="显示两行（当前行和下一行）" VerticalAlignment="Center" />
+                        <CheckBox x:Name="DesktopTwoLinesBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="显示两行" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="显示翻译" VerticalAlignment="Center" />
+                        <CheckBox x:Name="DesktopTranslationBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="桌面歌词显示翻译" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="文字描边" VerticalAlignment="Center" />
+                        <CheckBox x:Name="DesktopOutlineBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="文字描边" />
+                    </Grid>
+                    <StackPanel x:Name="DesktopColorsPanel" />
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                        <Button Style="{StaticResource Button.Subtle}" Content="把桌面歌词移回默认位置" Click="OnResetDesktopPosition" />
+                    </StackPanel>
+
+                    <TextBlock Style="{StaticResource Section}" Text="灵动词岛" />
+                    <TextBlock Style="{StaticResource Hint}" Text="宽度跟着歌词走。太长会左右来回滚。贴在右边时左边会跟着伸缩。可拖到屏幕边缘；贴在四角时会留下耳朵。封面固定在最左边。" Margin="0,0,0,4" />
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="显示灵动词岛" VerticalAlignment="Center" />
+                        <CheckBox x:Name="IslandEnabledBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="显示灵动词岛" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="260" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="字体" VerticalAlignment="Center" />
+                        <ComboBox x:Name="IslandFontBox" Grid.Column="1" IsEditable="True" IsTextSearchEnabled="True"
+                                  LostKeyboardFocus="OnFontCommit" SelectionChanged="OnFontCommit" AutomationProperties.Name="灵动词岛字体" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="没有播放时自动隐藏" VerticalAlignment="Center" />
+                        <CheckBox x:Name="IslandAutoHideBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="没有播放时自动隐藏" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="显示翻译" VerticalAlignment="Center" />
+                        <CheckBox x:Name="IslandTranslationBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="灵动词岛显示翻译" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="更宽的词岛" />
+                            <TextBlock Style="{StaticResource Hint}" Text="胶囊更圆一些，并同时显示下一句。" />
+                        </StackPanel>
+                        <CheckBox x:Name="IslandContinentBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="更宽的词岛" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="始终显示两行" VerticalAlignment="Center" />
+                        <CheckBox x:Name="IslandTwoLinesBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="词岛始终显示两行" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="粗体" VerticalAlignment="Center" />
+                        <CheckBox x:Name="IslandBoldBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="词岛粗体" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="逐字填色" />
+                            <TextBlock Style="{StaticResource Hint}" Text="有逐字时间轴时从左到右填色。关掉则整行一种颜色。" />
+                        </StackPanel>
+                        <CheckBox x:Name="IslandKaraokeBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="词岛逐字填色" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="其他程序全屏时隐藏" VerticalAlignment="Center" />
+                        <CheckBox x:Name="IslandHideFullscreenBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="其他程序全屏时隐藏词岛" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="本程序全屏歌词时隐藏" VerticalAlignment="Center" />
+                        <CheckBox x:Name="IslandHideLyricsFsBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="全屏歌词时隐藏词岛" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="260" /><ColumnDefinition Width="48" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="不透明度" VerticalAlignment="Center" />
+                        <Slider x:Name="IslandOpacitySlider" Grid.Column="1" Minimum="0.2" Maximum="1" TickFrequency="0.05" IsSnapToTickEnabled="True"
+                                VerticalAlignment="Center" ValueChanged="OnIslandSliderChanged" AutomationProperties.Name="词岛不透明度" />
+                        <TextBlock x:Name="IslandOpacityText" Grid.Column="2" Style="{StaticResource Text.Muted}" VerticalAlignment="Center" TextAlignment="Right" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="260" /><ColumnDefinition Width="48" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="背景不透明度" VerticalAlignment="Center" />
+                        <Slider x:Name="IslandBgOpacitySlider" Grid.Column="1" Minimum="0.2" Maximum="1" TickFrequency="0.05" IsSnapToTickEnabled="True"
+                                VerticalAlignment="Center" ValueChanged="OnIslandSliderChanged" AutomationProperties.Name="词岛背景不透明度" />
+                        <TextBlock x:Name="IslandBgOpacityText" Grid.Column="2" Style="{StaticResource Text.Muted}" VerticalAlignment="Center" TextAlignment="Right" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="260" /><ColumnDefinition Width="48" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="缩放" VerticalAlignment="Center" />
+                        <Slider x:Name="IslandScaleSlider" Grid.Column="1" Minimum="0.7" Maximum="1.5" TickFrequency="0.05" IsSnapToTickEnabled="True"
+                                VerticalAlignment="Center" ValueChanged="OnIslandSliderChanged" AutomationProperties.Name="词岛缩放" />
+                        <TextBlock x:Name="IslandScaleText" Grid.Column="2" Style="{StaticResource Text.Muted}" VerticalAlignment="Center" TextAlignment="Right" />
+                    </Grid>
+                    <StackPanel x:Name="IslandColorsPanel" />
+
+                    <TextBlock Style="{StaticResource Section}" Text="全屏歌词" />
+                    <TextBlock Style="{StaticResource Hint}" Text="从通知区域菜单打开，按 Esc 退出。" Margin="0,0,0,4" />
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="260" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="字体" VerticalAlignment="Center" />
+                        <ComboBox x:Name="FullscreenFontBox" Grid.Column="1" IsEditable="True" IsTextSearchEnabled="True"
+                                  LostKeyboardFocus="OnFontCommit" SelectionChanged="OnFontCommit" AutomationProperties.Name="全屏歌词字体" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="显示翻译" VerticalAlignment="Center" />
+                        <CheckBox x:Name="FullscreenTranslationBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="全屏歌词显示翻译" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="用模糊的封面做背景" VerticalAlignment="Center" />
+                        <CheckBox x:Name="FullscreenBlurBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="用模糊的封面做背景" />
+                    </Grid>
+                    <StackPanel x:Name="FullscreenColorsPanel" />
+
+                    <TextBlock Style="{StaticResource Section}" Text="歌词舞台" />
+                    <TextBlock Style="{StaticResource Hint}" Text="从通知区域菜单打开。居中的超大歌词，背景是封面取样后压暗的渐变。Esc、F11 或双击退出。" Margin="0,0,0,4" />
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="260" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="字体" VerticalAlignment="Center" />
+                        <ComboBox x:Name="StageFontBox" Grid.Column="1" IsEditable="True" IsTextSearchEnabled="True"
+                                  LostKeyboardFocus="OnFontCommit" SelectionChanged="OnFontCommit" AutomationProperties.Name="歌词舞台字体" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="显示翻译" VerticalAlignment="Center" />
+                        <CheckBox x:Name="StageTranslationBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="歌词舞台显示翻译" />
+                    </Grid>
+                    <StackPanel x:Name="StageColorsPanel" />
+
+                    <TextBlock Style="{StaticResource Section}" Text="任务栏歌词" />
+                    <TextBlock x:Name="TaskbarHint" Style="{StaticResource Hint}" Text="贴在任务栏上、托盘左边的一行歌词。纵向任务栏暂不支持；全屏游戏时会自动隐藏。" Margin="0,0,0,4" />
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="显示任务栏歌词" VerticalAlignment="Center" />
+                        <CheckBox x:Name="TaskbarEnabledBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="显示任务栏歌词" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="260" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="字体" VerticalAlignment="Center" />
+                        <ComboBox x:Name="TaskbarFontBox" Grid.Column="1" IsEditable="True" IsTextSearchEnabled="True"
+                                  LostKeyboardFocus="OnFontCommit" SelectionChanged="OnFontCommit" AutomationProperties.Name="任务栏歌词字体" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="显示封面" VerticalAlignment="Center" />
+                        <CheckBox x:Name="TaskbarCoverBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="任务栏歌词显示封面" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="显示翻译" VerticalAlignment="Center" />
+                        <CheckBox x:Name="TaskbarTranslationBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnViewsToggle" AutomationProperties.Name="任务栏歌词显示翻译" />
+                    </Grid>
+                    <StackPanel x:Name="TaskbarColorsPanel" />
+                </StackPanel>
+
+                <StackPanel x:Name="HotkeysPage" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource Text.Title}" Text="快捷键" />
+                    <TextBlock Style="{StaticResource Hint}" Margin="0,8,0,16"
+                               Text="全局快捷键在其他窗口在前台时也可用。需要带 Ctrl、Alt 或 Win，避免抢走普通打字。点「录制」后按下组合键；空着表示关闭。" />
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="180" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="显示 / 隐藏桌面歌词" VerticalAlignment="Center" />
+                        <TextBox x:Name="HotkeyDesktopBox" Grid.Column="1" IsReadOnly="True" AutomationProperties.Name="桌面歌词快捷键" />
+                        <Button Grid.Column="2" Content="录制" Margin="8,0,0,0" Click="OnRecordHotkey" Tag="ToggleDesktop" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="180" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="锁定 / 解锁桌面歌词" VerticalAlignment="Center" />
+                        <TextBox x:Name="HotkeyLockBox" Grid.Column="1" IsReadOnly="True" AutomationProperties.Name="锁定桌面歌词快捷键" />
+                        <Button Grid.Column="2" Content="录制" Margin="8,0,0,0" Click="OnRecordHotkey" Tag="ToggleLock" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="180" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="显示 / 隐藏灵动词岛" VerticalAlignment="Center" />
+                        <TextBox x:Name="HotkeyIslandBox" Grid.Column="1" IsReadOnly="True" AutomationProperties.Name="灵动词岛快捷键" />
+                        <Button Grid.Column="2" Content="录制" Margin="8,0,0,0" Click="OnRecordHotkey" Tag="ToggleIsland" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="180" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="显示 / 隐藏任务栏歌词" VerticalAlignment="Center" />
+                        <TextBox x:Name="HotkeyTaskbarBox" Grid.Column="1" IsReadOnly="True" AutomationProperties.Name="任务栏歌词快捷键" />
+                        <Button Grid.Column="2" Content="录制" Margin="8,0,0,0" Click="OnRecordHotkey" Tag="ToggleTaskbar" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="180" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="打开全屏歌词" VerticalAlignment="Center" />
+                        <TextBox x:Name="HotkeyFullscreenBox" Grid.Column="1" IsReadOnly="True" AutomationProperties.Name="全屏歌词快捷键" />
+                        <Button Grid.Column="2" Content="录制" Margin="8,0,0,0" Click="OnRecordHotkey" Tag="ToggleFullscreen" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="180" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="打开 / 关闭歌词舞台" VerticalAlignment="Center" />
+                        <TextBox x:Name="HotkeyStageBox" Grid.Column="1" IsReadOnly="True" AutomationProperties.Name="歌词舞台快捷键" />
+                        <Button Grid.Column="2" Content="录制" Margin="8,0,0,0" Click="OnRecordHotkey" Tag="ToggleStage" />
+                    </Grid>
+                    <Button Style="{StaticResource Button.Subtle}" Content="清除全部快捷键" HorizontalAlignment="Left" Margin="0,16,0,0" Click="OnClearHotkeys" />
+                </StackPanel>
+
+                <StackPanel x:Name="SupportPage" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource Text.Title}" Text="支持" />
+                    <TextBlock Style="{StaticResource Hint}" Margin="0,8,0,16"
+                               Text="lyric-clone 是个人学习项目，没有客服。下面这些地方能解决大部分问题。" />
+                    <TextBlock Style="{StaticResource Section}" Text="读不到正在播放的歌" />
+                    <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap"
+                               Text="需要 Windows 10 1809 或更新，并且播放器要把进度发给系统媒体控制。Spotify、Apple Music，以及装了 SMTC 插件的 foobar2000 / MusicBee 都可以。浏览器里的播放默认会被忽略。" />
+                    <TextBlock Style="{StaticResource Section}" Text="歌词从哪来" />
+                    <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap">
+                        <Run Text="在线歌词来自" />
+                        <Hyperlink NavigateUri="https://lrclib.net" RequestNavigate="OnLink">LRCLIB</Hyperlink>
+                        <Run Text="。也可以放 .lrc / .ttml 到本地文件夹，或让程序读取音乐文件里的内嵌歌词。" />
+                    </TextBlock>
+                    <TextBlock Style="{StaticResource Section}" Text="数据在哪" />
+                    <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap"
+                               Text="设置和曲目库在本机的数据文件夹里，可在「常规」页打开。卸载不会自动删除它们。" />
+                </StackPanel>
+
+                <!-- 按应用 -->
+                <StackPanel x:Name="AppsPage" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource Text.Title}" Text="按应用" />
+                    <TextBlock Style="{StaticResource Hint}" Margin="0,8,0,16"
+                               Text="每个播放器可以单独设置是否读取、延迟、平滑和来源顺序。播放过的应用会出现在这里。" />
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="240" /><ColumnDefinition Width="24" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                        <Border Style="{StaticResource Card}" Padding="4" MinHeight="300" VerticalAlignment="Top">
+                            <Grid>
+                                <ListBox x:Name="AppList" BorderThickness="0" Background="Transparent" SelectionChanged="OnAppSelected"
+                                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="6,4">
+                                                <TextBlock Text="{Binding Name}" Style="{StaticResource Text.Body}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="{Binding Detail}" Style="{StaticResource Text.Muted}" TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                                <TextBlock x:Name="AppListEmpty" Style="{StaticResource Text.Muted}" TextWrapping="Wrap" TextAlignment="Center"
+                                           VerticalAlignment="Center" Margin="16" Text="还没有检测到播放器。打开任意音乐软件播放一首歌。" />
+                            </Grid>
+                        </Border>
+
+                        <StackPanel x:Name="AppDetail" Grid.Column="2" IsEnabled="False">
+                            <TextBlock x:Name="AppNameText" Style="{StaticResource Text.Subtitle}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock x:Name="AppIdText" Style="{StaticResource Text.Muted}" TextTrimming="CharacterEllipsis" Margin="0,2,0,12" />
+                            <Grid Style="{StaticResource Row}">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                <TextBlock Style="{StaticResource Text.Body}" Text="读取这个应用的播放" VerticalAlignment="Center" />
+                                <CheckBox x:Name="AppEnabledBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnAppEdit" AutomationProperties.Name="读取这个应用的播放" />
+                            </Grid>
+                            <Grid Style="{StaticResource Row}">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource Text.Body}" Text="延迟" />
+                                    <TextBlock Style="{StaticResource Hint}" Text="叠加在设备延迟之上。" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBox x:Name="AppDelayBox" Width="96" TextAlignment="Right" FontFamily="{StaticResource Font.Mono}"
+                                             LostKeyboardFocus="OnAppDelayCommit" KeyDown="OnNumberKey" AutomationProperties.Name="应用延迟毫秒数" />
+                                    <TextBlock Style="{StaticResource Text.Body}" Text="ms" VerticalAlignment="Center" Margin="6,0,0,0" />
+                                </StackPanel>
+                            </Grid>
+                            <Grid Style="{StaticResource Row}">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="160" /></Grid.ColumnDefinitions>
+                                <TextBlock Style="{StaticResource Text.Body}" Text="时间轴平滑" VerticalAlignment="Center" />
+                                <ComboBox x:Name="AppSmoothingBox" Grid.Column="1" SelectionChanged="OnAppEdit" AutomationProperties.Name="这个应用的时间轴平滑">
+                                    <ComboBoxItem Content="跟随全局" />
+                                    <ComboBoxItem Content="开" />
+                                    <ComboBoxItem Content="关" />
+                                </ComboBox>
+                            </Grid>
+                            <Grid Style="{StaticResource Row}">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                <TextBlock Style="{StaticResource Text.Body}" Text="使用单独的来源顺序" VerticalAlignment="Center" />
+                                <CheckBox x:Name="AppCustomOrderBox" Grid.Column="1" Style="{StaticResource ToggleSwitch}" Click="OnAppEdit" AutomationProperties.Name="使用单独的来源顺序" />
+                            </Grid>
+                            <Grid x:Name="AppOrderPanel" Margin="0,4,0,0">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                <Border Style="{StaticResource Card}" Padding="4">
+                                    <ListBox x:Name="AppOrderList" BorderThickness="0" Background="Transparent" Height="176" DisplayMemberPath="Label" />
+                                </Border>
+                                <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                    <Button Content="上移" MinWidth="72" Margin="0,0,0,8" Click="OnAppSourceUp" />
+                                    <Button Content="下移" MinWidth="72" Click="OnAppSourceDown" />
+                                </StackPanel>
+                            </Grid>
+                            <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                                <Button Style="{StaticResource Button.Subtle}" Content="恢复这个应用的默认设置" Click="OnAppReset" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+
+                <!-- 关于 -->
+                <StackPanel x:Name="AboutPage" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource Text.Title}" Text="关于" />
+                    <TextBlock x:Name="VersionText" Style="{StaticResource Text.Body}" Margin="0,8,0,0" />
+                    <TextBlock Style="{StaticResource Hint}" Margin="0,4,0,0"
+                               Text="一个读取 Windows 媒体控制信息、显示同步歌词的个人学习项目。与任何音乐平台或其他歌词软件均无关联。" />
+
+                    <TextBlock Style="{StaticResource Section}" Text="致谢" />
+                    <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap">
+                        <Run Text="灵动词岛这一视图形式的创意来自 Lyricify（作者 WXRIW），依据" />
+                        <Hyperlink NavigateUri="https://creativecommons.org/licenses/by-sa/4.0/" RequestNavigate="OnLink">CC BY-SA 4.0</Hyperlink>
+                        <Run Text="署名使用。本软件的代码、图标和文字均为独立编写。" />
+                    </TextBlock>
+                    <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="0,8,0,0">
+                        <Run Text="在线歌词来自" />
+                        <Hyperlink NavigateUri="https://lrclib.net" RequestNavigate="OnLink">LRCLIB</Hyperlink>
+                        <Run Text="，一个由社区维护的免费歌词库。歌词版权归各自的权利人所有。" />
+                    </TextBlock>
+
+                    <TextBlock Style="{StaticResource Section}" Text="开源组件" />
+                    <ItemsControl x:Name="LicenseList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,3">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="260" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Name}" Style="{StaticResource Text.Body}" />
+                                    <TextBlock Grid.Column="1" Text="{Binding License}" Style="{StaticResource Text.Muted}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Style="{StaticResource Section}" Text="网络请求" />
+                    <TextBlock x:Name="UserAgentText" Style="{StaticResource Hint}" FontFamily="{StaticResource Font.Mono}" />
+                    <TextBlock Style="{StaticResource Hint}" Text="向 LRCLIB 请求时会带上这个标识，请求逐个发送并遵守对方的限速。" />
+
+                    <TextBlock Style="{StaticResource Section}" Text="更新" />
+                    <TextBlock Style="{StaticResource Hint}" Margin="0,0,0,8"
+                               Text="这个个人构建默认没有发布地址。如果你自己托管了一个版本信息 JSON（version / url / notes），可以填在下面。" />
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBox x:Name="UpdateFeedBox" AutomationProperties.Name="更新源地址"
+                                 LostKeyboardFocus="OnUpdateFeedCommit" />
+                        <Button x:Name="CheckUpdateButton" Grid.Column="1" Content="检查更新" Margin="8,0,0,0" Click="OnCheckUpdate" />
+                    </Grid>
+                    <TextBlock x:Name="UpdateStatusText" Style="{StaticResource Hint}" Margin="0,6,0,0" />
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Window>

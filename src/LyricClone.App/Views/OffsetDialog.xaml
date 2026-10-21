@@ -1,0 +1,62 @@
+<Window x:Class="LyricClone.App.Views.OffsetDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lyrics="clr-namespace:LyricClone.App.Lyrics"
+        Style="{StaticResource AppWindow}"
+        Title="偏移与效果预览"
+        Width="720" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <StackPanel Margin="24">
+        <TextBlock Style="{StaticResource Text.Subtitle}" Text="偏移与效果预览" />
+        <TextBlock x:Name="VersionText" Style="{StaticResource Text.Muted}" Margin="0,4,0,16" />
+
+        <Border CornerRadius="{StaticResource Radius.Lg}" Background="{StaticResource Brush.Lyric.OverlayBg}" Padding="24,20" Height="150">
+            <StackPanel VerticalAlignment="Center">
+                <lyrics:LyricLineView x:Name="CurrentLine" HorizontalAlignment="Center" IsActive="True"
+                                      FontSize="28" FontWeight="SemiBold" FontFamily="{StaticResource Font.Sans}"
+                                      TextBrush="{StaticResource Brush.Lyric.Text}" SungBrush="{StaticResource Brush.Lyric.Sung}"
+                                      DimBrush="{StaticResource Brush.Lyric.Dim}" TranslationBrush="{StaticResource Brush.Lyric.Translation}"
+                                      ShowTranslation="True" />
+                <lyrics:LyricLineView x:Name="NextLine" HorizontalAlignment="Center" Margin="0,10,0,0"
+                                      FontSize="18" FontFamily="{StaticResource Font.Sans}"
+                                      TextBrush="{StaticResource Brush.Lyric.Dim}" DimBrush="{StaticResource Brush.Lyric.Dim}"
+                                      SungBrush="{StaticResource Brush.Lyric.Dim}" ShowTranslation="False" />
+            </StackPanel>
+        </Border>
+
+        <Grid Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <RadioButton x:Name="FollowRadio" Content="跟随播放" GroupName="mode" Margin="0,0,16,0" VerticalAlignment="Center" Checked="OnModeChanged" />
+                <RadioButton x:Name="SimRadio" Content="模拟播放" GroupName="mode" VerticalAlignment="Center" Checked="OnModeChanged" />
+            </StackPanel>
+            <Slider x:Name="SimSlider" Grid.Column="1" Margin="16,0" VerticalAlignment="Center" Minimum="0" AutomationProperties.Name="模拟播放位置" />
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <TextBlock x:Name="PositionText" Style="{StaticResource Text.Muted}" FontFamily="{StaticResource Font.Mono}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <Button x:Name="SimPlayButton" Content="暂停" MinWidth="64" Click="OnSimPlay" />
+            </StackPanel>
+        </Grid>
+
+        <TextBlock Style="{StaticResource Text.Body}" FontWeight="SemiBold" Text="歌词偏移" Margin="0,20,0,4" />
+        <TextBlock Style="{StaticResource Text.Muted}" Text="正数让歌词更晚出现，负数让歌词更早出现。只影响这个版本。" Margin="0,0,0,8" />
+        <StackPanel Orientation="Horizontal">
+            <Button Content="−500" MinWidth="56" Tag="-500" Click="OnStep" Margin="0,0,4,0" />
+            <Button Content="−50" MinWidth="56" Tag="-50" Click="OnStep" Margin="0,0,8,0" />
+            <TextBox x:Name="OffsetBox" Width="96" TextAlignment="Right" FontFamily="{StaticResource Font.Mono}"
+                     TextChanged="OnOffsetText" AutomationProperties.Name="偏移毫秒数" />
+            <TextBlock Text="ms" Style="{StaticResource Text.Body}" VerticalAlignment="Center" Margin="6,0,8,0" />
+            <Button Content="+50" MinWidth="56" Tag="50" Click="OnStep" Margin="0,0,4,0" />
+            <Button Content="+500" MinWidth="56" Tag="500" Click="OnStep" Margin="0,0,16,0" />
+            <Button Style="{StaticResource Button.Subtle}" Content="重置" Click="OnReset" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,0">
+            <Button Content="取消" IsCancel="True" MinWidth="88" Margin="0,0,8,0" />
+            <Button Style="{StaticResource Button.Primary}" Content="保存" IsDefault="True" MinWidth="88" Click="OnSave" />
+        </StackPanel>
+    </StackPanel>
+</Window>
