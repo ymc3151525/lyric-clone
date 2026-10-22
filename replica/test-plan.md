@@ -4,8 +4,9 @@ Built from the flows in `recon.md` (F01–F09). Tested against our own build onl
 or its servers. LRCLIB and the media session are faked in automated runs; every lyric line in the
 tests is made up.
 
-How to run: `dotnet test LyricClone.sln` (Core 72, Infrastructure 39, Flows 42; all green on 2026-10-20).
+How to run: `dotnet test LyricClone.sln` (Core 107, Infrastructure 69, Flows 52; all green on 2026-10-22).
 Flow tests live in `tests/LyricClone.Flows.Tests`; they drive the real WPF windows on an STA thread.
+Infrastructure tests also cover settings isolation, LRCLIB request policy, NetEase/Kugou cache files, and QRC XML entity safety.
 
 Types: H = happy path, E = edge case, N = negative input. Auto = name of the automated test, or
 `manual` (see checklist at the bottom).
@@ -47,7 +48,7 @@ Types: H = happy path, E = edge case, N = negative input. Auto = name of the aut
 | F08-E2 | F08 | E | 获取歌词 for a track LRCLIB lacks | Info bar "没有找到歌词" | `F08_E2_fetch_for_track_with_no_lyrics_shows_message` | pass |
 | F09-H1 | F09 | H | Desktop lyrics on, lock | Window gets WS_EX_TRANSPARENT; shows current line | `F09_H1_desktop_lyrics_lock_makes_window_click_through_and_unlock_restores` | pass |
 | F09-H2 | F09 | H | Island on: idle, playing, auto-hide off | Tool window, centred, hides when idle | `F09_H2_island_is_a_tool_window_hides_when_idle_and_shows_when_playing` | pass |
-| F09-E1 | F09 | E | Island play/pause button | Forwarded to the session | `F09_E1_island_play_pause_button_reaches_the_player` | pass |
+| F09-E1 | F09 | E | Island has no title/transport | No buttons, no Header/TitleText | `F09_E1_island_has_no_playback_controls` | pass |
 | F09-E2 | F09 | E | Switch theme dark → light → system | Colour dictionary swapped each time | `F09_E2_theme_switch_changes_brushes_live` | pass |
 | F09-E3 | F09 | E | Desktop font cleared / not installed | Falls back to the sans font | `F09_E3_desktop_font_cleared_falls_back_to_default` | pass |
 | F09-E4 | F09 | E | Settings → 视图: swatch, invalid hex, typed hex, 默认; island sung colour | Desktop/island colours apply live; bad input ignored; default restores theme | `F09_E4_colours_from_settings_apply_live_to_desktop_and_island_and_default_restores_theme` | pass |
@@ -63,6 +64,30 @@ Types: H = happy path, E = edge case, N = negative input. Auto = name of the aut
 | F09-M1 | F09 | E | Locked desktop lyrics: real mouse clicks pass through to the app below; unlock from tray | Clicks go through; tray unlocks | manual | — |
 | F09-M2 | F09 | E | Two monitors, 100 % + 150 % DPI; drag desktop lyrics across | Stays sharp, position remembered per run | manual | — |
 | F09-M3 | F09 | E | Island over a fullscreen game / video | Stays on top or hides per setting, no focus steal | manual | — |
+
+## Extra automated cases (not in the original F01–F09 matrix)
+
+| auto | area | notes |
+|---|---|---|
+| `F01_live_suffix_still_matches_the_studio_record` | lyrics | Live suffix still hits studio LRCLIB record |
+| `F01_exact_lookup_error_falls_back_to_search` | lyrics | `/api/get` failure does not skip search |
+| `F09_settings_preview_follows_translation_and_disables_view_toggles` | views | Settings preview |
+| `F09_desktop_does_not_invent_a_translation_row_for_chinese_lyrics` | views | Chinese lyrics stay one line |
+| `F09_desktop_shows_real_translation_on_english_lines` | views | English + Chinese pair |
+| `F09_island_clears_previous_lyrics_when_the_next_song_has_none` | island | No stale lines |
+| `F09_island_english_shows_only_current_line_and_translation` | island | Hide next line when translating |
+| `F09_island_cover_stays_compact_when_the_header_is_open` | island | Cover stays ~36px (header removed) |
+| `F09_island_width_grows_with_a_longer_lyric_line` | island | Width follows lyrics |
+| `F09_island_keeps_a_cover_placeholder_when_the_player_gives_none` | island | Placeholder if no art |
+| `Unreadable_file_is_backed_up_and_defaults_are_used` | settings | Corrupt JSON → `.broken` + defaults |
+| `Update_writes_only_under_the_given_path_and_raises_changed` | settings | Temp dir only |
+| `Export_and_import_round_trip` | settings | Import/export |
+| `Data_dir_override_points_settings_at_the_temp_folder` | settings | `LYRIC_CLONE_DATA_DIR` |
+| `Sends_the_http_client_user_agent_only_to_lrclib` | lyrics | UA + host `lrclib.net` |
+| `Spaces_requests_at_least_300ms_apart` | lyrics | Serial gap |
+| `Finds_netease_lrc_by_artist_dash_title` | lyrics | NetEase cache file |
+| `Finds_kugou_krc_by_artist_dash_title` | lyrics | Kugou cache file |
+| `Extract_does_not_resolve_external_xml_entities` | lyrics | QRC XXE ignored |
 
 ## Manual checklist
 
