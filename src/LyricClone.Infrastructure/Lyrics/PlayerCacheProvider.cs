@@ -224,27 +224,56 @@ public sealed class PlayerCacheProvider
         }
     }
 
-    /// <summary>QQ cache decrypts to a small XML wrapper; the actual QRC sits on LyricContent.</summary>
+    private static readonly Regex LyricContentAttr = new(
+        @"LyricContent\s*=\s*""([\s\S]*)""\s*/?>",
+        RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    /// <summary>
+    /// QQ cache decrypts to a small XML wrapper; the actual QRC sits on LyricContent.
+    /// Desktop files often leave raw newlines and '&lt;' in that attribute, so LoadXml fails.
+    /// </summary>
     internal static string ExtractLyricContent(string text)
     {
         var t = text.TrimStart();
-        if (t.Length == 0 || t[0] != '<')
+        if (t.Length == 0 || t[0] != '<' || t.IndexOf("LyricContent", StringComparison.OrdinalIgnoreCase) < 0)
         {
             return text;
         }
 
+        if (TryLoadXmlLyricContent(t, out var inner))
+        {
+            return inner;
+        }
+
+        var match = LyricContentAttr.Match(t);
+        if (!match.Success)
+        {
+            return text;
+        }
+
+        inner = System.Net.WebUtility.HtmlDecode(match.Groups[1].Value);
+        return string.IsNullOrWhiteSpace(inner) ? text : inner;
+    }
+
+    private static bool TryLoadXmlLyricContent(string xml, out string inner)
+    {
+        inner = "";
         try
         {
-            var doc = new XmlDocument();
-            doc.XmlResolver = null;
-            doc.LoadXml(t);
-            var node = doc.SelectSingleNode("//*[@LyricContent]");
-            var inner = node?.Attributes?["LyricContent"]?.Value;
-            return string.IsNullOrWhiteSpace(inner) ? text : inner;
+            var doc = new XmlDocument { XmlResolver = null };
+            doc.LoadXml(xml);
+            var value = doc.SelectSingleNode("//*[@LyricContent]")?.Attributes?["LyricContent"]?.Value;
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            inner = value;
+            return true;
         }
         catch (Exception)
         {
-            return text;
+            return false;
         }
     }
 

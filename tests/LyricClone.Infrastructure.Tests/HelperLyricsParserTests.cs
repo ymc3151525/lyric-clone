@@ -86,6 +86,26 @@ public sealed class HelperLyricsParserTests
     }
 
     [Fact]
+    public void Qrc_xml_wrapper_with_raw_lt_still_parses()
+    {
+        var xml = """
+            <?xml version="1.0" encoding="utf-8"?>
+            <QrcInfos>
+            <QrcHeadInfo SaveTime="1" Version="100"/>
+            <LyricInfo LyricCount="1">
+            <Lyric_1 LyricType="1" LyricContent="[0,1500]one<(0,700)two(700,800)
+            "/>
+            </LyricInfo>
+            </QrcInfos>
+            """;
+        var parsed = _parser.Parse(xml, LyricsFormat.Qrc);
+        Assert.False(parsed.IsEmpty);
+        Assert.Contains("one", parsed.Lines[0].Text);
+        Assert.Contains("two", parsed.Lines[0].Text);
+        Assert.Equal(0, parsed.Lines[0].StartMs);
+    }
+
+    [Fact]
     public void Local_folder_matches_qrc_by_file_name()
     {
         var dir = Path.Combine(Path.GetTempPath(), "lyric-clone-qrc-" + Guid.NewGuid().ToString("N"));

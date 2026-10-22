@@ -19,6 +19,7 @@ public sealed class HelperLyricsParser : LyricsParser
 
     public override LyricsFormat Detect(string content)
     {
+        content = PlayerCacheProvider.ExtractLyricContent(content);
         var t = content.TrimStart();
         if (t.Contains("[type:LyricifyLines]", StringComparison.OrdinalIgnoreCase))
         {
@@ -56,6 +57,12 @@ public sealed class HelperLyricsParser : LyricsParser
 
     public override ParsedLyrics Parse(string content, LyricsFormat format, string? translation = null)
     {
+        content = PlayerCacheProvider.ExtractLyricContent(content);
+        if (!string.IsNullOrWhiteSpace(translation))
+        {
+            translation = PlayerCacheProvider.ExtractLyricContent(translation);
+        }
+
         if (format is LyricsFormat.Lrc or LyricsFormat.Ttml or LyricsFormat.Plain)
         {
             return base.Parse(content, format, translation);

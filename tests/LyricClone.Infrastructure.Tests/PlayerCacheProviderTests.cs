@@ -98,6 +98,26 @@ public sealed class PlayerCacheProviderTests
     }
 
     [Fact]
+    public void Extracts_qrc_when_the_xml_attribute_has_newlines_and_raw_lt()
+    {
+        var xml = """
+            <?xml version="1.0" encoding="utf-8"?>
+            <QrcInfos>
+            <QrcHeadInfo SaveTime="1" Version="100"/>
+            <LyricInfo LyricCount="1">
+            <Lyric_1 LyricType="1" LyricContent="[ti:sample]
+            [0,100]one<(0,100)
+            "/>
+            </LyricInfo>
+            </QrcInfos>
+            """;
+        var inner = PlayerCacheProvider.ExtractLyricContent(xml);
+        Assert.Contains("[0,100]one<(0,100)", inner);
+        Assert.DoesNotContain("QrcInfos", inner);
+        Assert.DoesNotContain("LyricContent", inner);
+    }
+
+    [Fact]
     public void Leaves_plain_lyric_bytes_unchanged()
     {
         var plain = "[00:01.00]hello sample"u8.ToArray();
