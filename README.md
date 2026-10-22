@@ -2,6 +2,8 @@
 
 个人学习用的 Windows 歌词浮层。托盘里打开，跟着系统正在播放的歌曲显示歌词，支持桌面歌词和灵动岛。
 
+协作与后续功能以 [AGENTS.md](AGENTS.md) 为最高规范；模块说明见其中的模块索引。
+
 灵动岛形态向 [Lyricify](https://github.com/WXRIW/Lyricify-App)（WXRIW）的公开设计致谢，许可为 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)。本仓库为独立实现，不含 Lyricify 的源码、图标或文案。
 
 ## 功能

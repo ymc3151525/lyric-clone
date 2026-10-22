@@ -35,4 +35,6 @@ Desktop.ini
 *~
 .idea/
 .vscode/
-.cursor/
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**

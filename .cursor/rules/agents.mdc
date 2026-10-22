@@ -1,0 +1,15 @@
+---
+description: 本仓库最高协作规范，始终以 AGENTS.md 为准
+alwaysApply: true
+---
+
+# 最高规范
+
+以仓库根目录 `AGENTS.md` 为最高标准。冲突时以它为准。
+
+- 不确定先问用户，不要猜。
+- 按能力模块改动：只动相关模块，并同步该模块 README / CHANGELOG。
+- 跨模块只走对方 README 列出的公开接口。
+- 新功能放 `modules/<模块>/`，不要默默重构 `src/` 分层。
+- 提交：`feat|fix|docs|chore(<模块>): 中文说明`；未要求则不 push。
+- 禁止：非官方 QQ/网易/酷狗 HTTP、Lyricify 源码/图标/文案、仓库内存真实歌词。
