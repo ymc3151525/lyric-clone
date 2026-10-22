@@ -26,4 +26,4 @@
 ## 当前实现
 `src/LyricClone.Infrastructure/Lyrics/`、`Lrclib/`  
 `src/LyricClone.Core/Lyrics/`、`Library/TrackNormalizer.cs`、`Library/VersionSelector.cs`  
-测试：`tests/LyricClone.Infrastructure.Tests/`、`tests/LyricClone.Core.Tests/*Parser*`
+测试：`tests/LyricClone.Infrastructure.Tests/`（含 LRCLIB 策略、QQ/网易/酷狗缓存、QRC XXE）、`tests/LyricClone.Core.Tests/*Parser*`

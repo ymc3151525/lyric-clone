@@ -28,11 +28,17 @@ public class LrclibClientTests
     private static HttpResponseMessage Json(string body, HttpStatusCode code = HttpStatusCode.OK) =>
         new(code) { Content = new StringContent(body, Encoding.UTF8, "application/json") };
 
-    private static (LrclibClient Client, FakeHandler Handler, List<TimeSpan> Delays) Create(Func<HttpRequestMessage, HttpResponseMessage> respond)
+    private static (LrclibClient Client, FakeHandler Handler, List<TimeSpan> Delays) Create(Func<HttpRequestMessage, HttpResponseMessage> respond, string? userAgent = null)
     {
         var handler = new FakeHandler(respond);
         var delays = new List<TimeSpan>();
-        var client = new LrclibClient(new HttpClient(handler), NullLogger<LrclibClient>.Instance, (d, _) => { delays.Add(d); return Task.CompletedTask; });
+        var http = new HttpClient(handler) { BaseAddress = new Uri(LrclibClient.BaseAddress) };
+        if (!string.IsNullOrWhiteSpace(userAgent))
+        {
+            http.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
+        }
+
+        var client = new LrclibClient(http, NullLogger<LrclibClient>.Instance, (d, _) => { delays.Add(d); return Task.CompletedTask; });
         return (client, handler, delays);
     }
 
@@ -98,6 +104,34 @@ public class LrclibClientTests
         Assert.True(r!.IsInstrumental);
         Assert.Equal(LyricsFormat.Plain, r.Format);
         Assert.False(r.HasSyncedContent);
+    }
+
+    [Fact]
+    public async Task Sends_the_http_client_user_agent_only_to_lrclib()
+    {
+        const string ua = "lyric-clone/0.1.0 (personal build; contact: set in settings)";
+        var (client, handler, _) = Create(_ => Json(Record), ua);
+
+        await client.GetAsync("Sample", "Band", "Album", 200_000, CancellationToken.None);
+
+        var request = Assert.Single(handler.Requests);
+        Assert.Equal("lrclib.net", request.RequestUri!.Host);
+        Assert.StartsWith("https://lrclib.net/", request.RequestUri.AbsoluteUri, StringComparison.Ordinal);
+        Assert.Contains("lyric-clone/0.1.0", request.Headers.UserAgent.ToString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Spaces_requests_at_least_300ms_apart()
+    {
+        var (client, handler, delays) = Create(_ => Json(Record));
+
+        await client.GetAsync("Sample", "Band", null, null, CancellationToken.None);
+        await client.GetAsync("Sample", "Band", null, null, CancellationToken.None);
+
+        Assert.Equal(2, handler.Requests.Count);
+        var gap = Assert.Single(delays);
+        Assert.True(gap > TimeSpan.Zero, "second request must wait out the remainder of the 300ms gap");
+        Assert.InRange(gap, TimeSpan.FromMilliseconds(1), TimeSpan.FromMilliseconds(300));
     }
 
     [Theory]

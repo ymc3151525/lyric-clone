@@ -143,6 +143,69 @@ public sealed class PlayerCacheProviderTests
     }
 
     [Fact]
+    public void Finds_netease_lrc_by_artist_dash_title()
+    {
+        var dir = Path.Combine(Path.GetTempPath(), "lyric-clone-netease-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(dir);
+        try
+        {
+            File.WriteAllText(Path.Combine(dir, "虚构乐队 - 示例曲目.lrc"), "[00:01.00]hello sample\n[00:04.00]next sample\n");
+            var found = new PlayerCacheProvider(_ => [dir]).Find(LyricsSources.NeteaseCache, Track("示例曲目", "虚构乐队", 200_000));
+            Assert.NotNull(found);
+            Assert.Equal(LyricsSources.NeteaseCache, found.Source);
+            Assert.Equal(LyricsFormat.Lrc, found.Format);
+            Assert.Contains("hello sample", found.Content);
+        }
+        finally
+        {
+            Directory.Delete(dir, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Finds_kugou_krc_by_artist_dash_title()
+    {
+        var dir = Path.Combine(Path.GetTempPath(), "lyric-clone-kugou-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(dir);
+        try
+        {
+            File.WriteAllText(Path.Combine(dir, "虚构乐队 - 示例曲目.krc"), HelperLyricsParserTests.Krc);
+            var found = new PlayerCacheProvider(_ => [dir]).Find(LyricsSources.KugouCache, Track("示例曲目", "虚构乐队", 200_000));
+            Assert.NotNull(found);
+            Assert.Equal(LyricsSources.KugouCache, found.Source);
+            Assert.Equal(LyricsFormat.Krc, found.Format);
+            Assert.Contains("one", found.Content);
+        }
+        finally
+        {
+            Directory.Delete(dir, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Extract_does_not_resolve_external_xml_entities()
+    {
+        var canary = Path.Combine(Path.GetTempPath(), "lyric-clone-xxe-" + Guid.NewGuid().ToString("N") + ".txt");
+        File.WriteAllText(canary, "CANARY_XXE_SHOULD_NOT_APPEAR");
+        try
+        {
+            var href = new Uri(canary).AbsoluteUri;
+            var xml = $"""
+                <?xml version="1.0"?>
+                <!DOCTYPE foo [<!ENTITY xxe SYSTEM "{href}">]>
+                <Qrc LyricContent="[0,100]one(0,100)&xxe;" />
+                """;
+            var inner = PlayerCacheProvider.ExtractLyricContent(xml);
+            Assert.DoesNotContain("CANARY_XXE_SHOULD_NOT_APPEAR", inner);
+            Assert.Contains("one", inner, StringComparison.Ordinal);
+        }
+        finally
+        {
+            File.Delete(canary);
+        }
+    }
+
+    [Fact]
     public void WithKnownDefaults_inserts_player_caches_ahead_of_older_orders()
     {
         var merged = LyricsSources.WithKnownDefaults([LyricsSources.LocalFile, LyricsSources.Lrclib]);
