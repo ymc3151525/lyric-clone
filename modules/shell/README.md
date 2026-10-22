@@ -22,6 +22,8 @@
 ## 关键约定
 - 单实例互斥名 `lyric-clone.single-instance`。
 - `--autostart` 启动时跳过「没有播放器」提示。
+- 可执行文件图标与托盘图标使用 `src/LyricClone.App/Assets/app.ico`。
+- Windows 安装包脚本在仓库根目录 `packaging/`（Inno Setup，装到 `%LocalAppData%\Programs\lyric-clone`）。
 - 后续新文件放本目录，加入 `src/LyricClone.App/LyricClone.App.csproj`。
 
 ## 当前实现

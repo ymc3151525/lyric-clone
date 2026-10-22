@@ -9,6 +9,7 @@
 - 运行：`dotnet run --project src/LyricClone.App`（托盘图标；数据在 `%AppData%\lyric-clone`）
 - 构建：`dotnet build LyricClone.sln`
 - 测试：`dotnet test LyricClone.sln`（提交前必须通过）
+- 安装包：`powershell -ExecutionPolicy Bypass -File packaging/build.ps1`（自包含 win-x64，Inno Setup）
 
 硬约束（产品，不是风格）：
 - 不使用非官方 QQ / 网易云 / 酷狗 HTTP 歌词接口；本机播放器缓存文件可以读。

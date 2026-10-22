@@ -7,9 +7,14 @@
     <UseWPF>true</UseWPF>
     <RootNamespace>LyricClone.App</RootNamespace>
     <AssemblyName>LyricClone</AssemblyName>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\app.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="LyricClone.Flows.Tests" />

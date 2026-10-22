@@ -16,7 +16,24 @@
 
 不使用非官方的 QQ / 网易云 / 酷狗 HTTP 歌词接口。
 
-## 环境
+## 安装
+
+Windows 10/11 x64 安装包（自包含运行时，不必先装 .NET）：
+
+1. 打开 [Releases](https://github.com/ymc3151525/lyric-clone/releases)
+2. 下载 `lyric-clone-0.1.0-win-x64-setup.exe` 并运行
+3. 默认装到 `%LocalAppData%\Programs\lyric-clone`（不需要管理员权限）
+4. 在通知区域打开托盘图标
+
+本地重新打包：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File packaging/build.ps1
+```
+
+产物在 `artifacts/lyric-clone-0.1.0-win-x64-setup.exe`（该目录不进 Git）。需要 Inno Setup 6 的 `ISCC.exe`。
+
+## 环境（从源码运行）
 
 - Windows 10 或更高
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
@@ -32,7 +49,7 @@ dotnet run --project src/LyricClone.App
 
 `src/LyricClone.App/bin/Debug/net10.0-windows10.0.19041.0/LyricClone.exe`
 
-运行后在通知区域打开托盘图标。
+运行后在通知区域打开托盘图标。图标文件在 `src/LyricClone.App/Assets/`。
 
 ## 测试
 

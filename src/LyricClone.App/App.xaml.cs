@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Windows;
 using System.Windows.Controls;
 using H.NotifyIcon;
@@ -524,29 +523,15 @@ public partial class App : WpfApplication
         return item;
     }
 
-    /// <summary>Placeholder tray glyph drawn at runtime: a rounded square with two bars. Replaced in /replica-brand.</summary>
+    /// <summary>App icon from <c>Assets/app.ico</c> (also the executable icon).</summary>
     private static Icon CreateTrayIcon()
     {
-        using var bmp = new Bitmap(32, 32);
-        using (var g = Graphics.FromImage(bmp))
+        var uri = new Uri("pack://application:,,,/LyricClone;component/Assets/app.ico", UriKind.Absolute);
+        var info = GetResourceStream(uri) ?? throw new InvalidOperationException("Missing tray icon Assets/app.ico.");
+        using (info.Stream)
+        using (var loaded = new Icon(info.Stream))
         {
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.Clear(System.Drawing.Color.Transparent);
-            using var path = new GraphicsPath();
-            const int r = 8;
-            path.AddArc(1, 1, r * 2, r * 2, 180, 90);
-            path.AddArc(31 - r * 2, 1, r * 2, r * 2, 270, 90);
-            path.AddArc(31 - r * 2, 31 - r * 2, r * 2, r * 2, 0, 90);
-            path.AddArc(1, 31 - r * 2, r * 2, r * 2, 90, 90);
-            path.CloseFigure();
-            using var bg = new SolidBrush(System.Drawing.Color.FromArgb(0x3B, 0x5B, 0xDB));
-            g.FillPath(bg, path);
-            using var fg = new SolidBrush(System.Drawing.Color.White);
-            g.FillRectangle(fg, 7, 11, 18, 4);
-            g.FillRectangle(fg, 7, 18, 12, 4);
+            return (Icon)loaded.Clone();
         }
-
-        var handle = bmp.GetHicon();
-        return (Icon)Icon.FromHandle(handle).Clone();
     }
 }

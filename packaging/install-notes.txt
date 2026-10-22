@@ -1,0 +1,7 @@
+lyric-clone is a personal Windows lyric overlay.
+
+- It lives in the notification area (system tray).
+- Settings and the lyric library are stored in %AppData%\lyric-clone.
+- It reads the Windows System Media Transport Controls session and local player cache files. It does not call unofficial QQ / NetEase / Kugou lyric HTTP APIs.
+
+The Dynamic Island layout idea is credited to Lyricify (WXRIW), CC BY-SA 4.0. This build is an independent implementation and does not include Lyricify source, icons, or copy.
