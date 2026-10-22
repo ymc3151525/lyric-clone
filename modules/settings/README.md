@@ -24,4 +24,4 @@
 `src/LyricClone.Infrastructure/Settings/SettingsStore.cs`  
 `src/LyricClone.Core/Settings/`  
 `src/LyricClone.App/Views/SettingsWindow.*`  
-测试：`tests/LyricClone.Core.Tests/SettingsLogicTests.cs`
+测试：`tests/LyricClone.Core.Tests/SettingsLogicTests.cs`、`tests/LyricClone.Infrastructure.Tests/SettingsStoreTests.cs`
